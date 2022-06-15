@@ -1,13 +1,11 @@
 # Failover Issue
 
 This folder attempts to minimally reproduce https://github.com/bitnami/bitnami-docker-postgresql-repmgr/issues/122
-
-The `.yaml` files have a k8s config to run the deployment to reproduce the issue.
-
-The [`simulate-failover.sh`](./simulate-failover.sh) interacts with k8s to simulate a successful vs unsuccessful
+* The `failover-issue` folder has a k8s config to run the deployment to reproduce the issue.
+* The [`simulate-failover.sh`](./simulate-failover.sh) interacts with k8s to simulate a successful vs unsuccessful
 failover.
 
-## Happy Path Works
+## Happy Path Works _([example](https://user-images.githubusercontent.com/3299155/173935887-6c8ec4c8-82c8-4d3c-a765-f5c99eed340c.png))_
 
 Run this, and verify it exits with `0` and printed the values 1 through 10 (indicating data was replicated and node-1
 promoted).
@@ -16,9 +14,9 @@ promoted).
 ./simulate-failover.sh
 ```
 
-## But it's not resilient
+## But it's unrecoverable if node-1 restarts before promote _([example](https://user-images.githubusercontent.com/3299155/173936451-fce51d29-ff41-4b18-b194-de87c5523ea5.png))_
 
-Run this, which does the same thing _--except it restarts node-1 before promoting it --_ and watch it fail because
+Run this, which does the same thing _-- except it restarts node-1 before promoting it --_ and watch it fail because
 node-1 refuses to start up if it can't find the primary (node-0).
 
 ```shell
