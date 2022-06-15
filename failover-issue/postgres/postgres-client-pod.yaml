@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: postgres-client
+  name: postgres-client
+spec:
+  containers:
+    - name: postgres-client
+      image: public.ecr.aws/bitnami/postgresql:14.3.0-debian-10-r22
+      env:
+        - name: ALLOW_EMPTY_PASSWORD
+          value: "yes"

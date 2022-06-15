@@ -1,0 +1,26 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: failover-issue
+
+resources:
+  - namespace.yaml
+
+  - postgres/postgres-repmgr-configmap.yaml
+
+  - postgres/postgres-node-0-deployment.yaml
+  - postgres/postgres-node-0-pvclaim.yaml
+  - postgres/postgres-node-0-service.yaml
+
+  - postgres/postgres-node-1-deployment.yaml
+  - postgres/postgres-node-1-pvclaim.yaml
+  - postgres/postgres-node-1-service.yaml
+
+  - postgres/postgres-client-pod.yaml
+
+configMapGenerator:
+  - name: postgresql.conf
+    files: [ postgres/postgresql.conf ]
+  - name: repmgr.conf
+    files: [ postgres/repmgr.conf ]
+  - name: postgres-initdb.sh
+    files: [ postgres/initdb.sh ]

@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-repmgr
+data:
+
+  BITNAMI_DEBUG: "false"
+
+  #
+  # POSTGRES CONFIG
+  #
+  POSTGRESQL_VOLUME_DIR: "/bitnami/postgresql"
+  PGDATA: "/bitnami/postgresql/data"
+  POSTGRES_USER: "postgres"
+  POSTGRES_DB: "postgres"
+  POSTGRESQL_SHARED_PRELOAD_LIBRARIES: "pgaudit"
+  POSTGRESQL_ENABLE_TLS: "no"
+
+  #
+  # REPMGR CONFIG
+  #
+  REPMGR_UPGRADE_EXTENSION: "yes"
+  REPMGR_PGHBA_TRUST_ALL: "no"
+  REPMGR_MOUNTED_CONF_DIR: "/bitnami/repmgr/conf"
+  REPMGR_LOG_LEVEL: "WARNING"
+  REPMGR_CONNECT_TIMEOUT: "5"
+  REPMGR_RECONNECT_ATTEMPTS: "3"
+  REPMGR_RECONNECT_INTERVAL: "5"
+  REPMGR_DATABASE: "repmgr"
+  REPMGR_USERNAME: "repmgr"

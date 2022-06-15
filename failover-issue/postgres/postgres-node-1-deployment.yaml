@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-node-1
+spec:
+  selector:
+    matchLabels:
+      app: postgres-node-1
+  replicas: 1
+  revisionHistoryLimit: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: postgres-node-1
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        fsGroup: 1001
+      containers:
+        - name: postgresql-repmgr
+          image: public.ecr.aws/bitnami/postgresql-repmgr:14.3.0-debian-11-r4
+          imagePullPolicy: "IfNotPresent"
+          securityContext:
+            runAsUser: 1001
+          ports:
+            - containerPort: 5432
+          env:
+            - name: MY_POD_NAME
+              value: postgres-node-1
+            - name: REPMGR_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+
+            - name: REPMGR_PARTNER_NODES
+              value: postgres-node-0,postgres-node-1
+            - name: REPMGR_PRIMARY_HOST
+              value: "postgres-node-0"
+            - name: REPMGR_NODE_NAME
+              value: "$(MY_POD_NAME)"
+            - name: REPMGR_NODE_NETWORK_NAME
+              value: "$(MY_POD_NAME)"
+
+            - name: APP_PG_PASSWORD
+              value: pwd  # secrets ref in my product
+            - name: POSTGRES_PASSWORD
+              value: admin  # secrets ref in my product
+            - name: REPMGR_PASSWORD
+              value: admin  # secrets ref in my product
+          envFrom:
+            - configMapRef:
+                name: postgres-repmgr
+          volumeMounts:
+            - name: data-postgres-node-1-volume
+              mountPath: /bitnami/postgresql
+            - name: postgresql-conf
+              mountPath: /opt/bitnami/postgresql/conf/conf.d/postgresql.quickcode.conf
+              subPath: postgresql.conf
+            - name: repmgr-conf
+              mountPath: /bitnami/repmgr/conf/repmgr.conf
+              subPath: repmgr.conf
+      #            - name: initdb-script
+      #              mountPath: /docker-entrypoint-initdb.d/initdb.sh
+      #              subPath: initdb.sh
+      volumes:
+        - name: data-postgres-node-1-volume
+          persistentVolumeClaim:
+            claimName: data-postgres-node-1
+        - name: initdb-script
+          configMap:
+            name: postgres-initdb.sh
+            defaultMode: 0755
+            items:
+              - key: initdb.sh
+                path: initdb.sh
+        - name: postgresql-conf
+          configMap:
+            name: postgresql.conf
+            defaultMode: 0755
+            items:
+              - key: postgresql.conf
+                path: postgresql.conf
+        - name: repmgr-conf
+          configMap:
+            name: repmgr.conf
+            defaultMode: 0755
+            items:
+              - key: repmgr.conf
+                path: repmgr.conf
