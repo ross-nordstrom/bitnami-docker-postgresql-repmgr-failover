@@ -61,6 +61,9 @@ spec:
             - name: repmgr-conf
               mountPath: /bitnami/repmgr/conf/repmgr.conf
               subPath: repmgr.conf
+            - name: librepmgr-script
+              mountPath: /opt/bitnami/scripts/librepmgr.sh
+              subPath: librepmgr.sh
       #            - name: initdb-script
       #              mountPath: /docker-entrypoint-initdb.d/initdb.sh
       #              subPath: initdb.sh
@@ -89,3 +92,10 @@ spec:
             items:
               - key: repmgr.conf
                 path: repmgr.conf
+        - name: librepmgr-script
+          configMap:
+            name: librepmgr.sh
+            defaultMode: 0755
+            items:
+              - key: librepmgr.sh
+                path: librepmgr.sh
