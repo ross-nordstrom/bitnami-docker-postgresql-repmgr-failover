@@ -560,7 +560,7 @@ EOF
 #########################
 repmgr_wait_primary_node() {
     local return_value=1
-    local -i timeout=60
+    local -i timeout=${1:-60}
     local -i step=10
     local -i max_tries=$((timeout / step))
     local schemata
@@ -759,8 +759,9 @@ repmgr_initialize() {
     am_i_root && chown "$POSTGRESQL_DAEMON_USER:$POSTGRESQL_DAEMON_GROUP" "$REPMGR_LOCK_DIR"
 
     if [[ "$REPMGR_ROLE" = "standby" ]]; then
-        repmgr_wait_primary_node || exit 1
-        repmgr_rewind
+        debug "[ross] Try once to wait for primary"
+        repmgr_wait_primary_node 1 && repmgr_rewind
+        debug "[ross] Checked primary, moving on..."
     fi
     postgresql_initialize
     if ! repmgr_is_file_external "postgresql.conf"; then

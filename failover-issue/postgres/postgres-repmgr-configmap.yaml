@@ -4,7 +4,7 @@ metadata:
   name: postgres-repmgr
 data:
 
-  BITNAMI_DEBUG: "false"
+  BITNAMI_DEBUG: "true"
 
   #
   # POSTGRES CONFIG
